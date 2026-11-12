@@ -51,7 +51,7 @@ fun ImprovNav() {
             arguments = listOf(navArgument("id") { type = NavType.StringType }),
         ) { entry ->
             val id = entry.arguments?.getString("id").orEmpty()
-            val messages by produceState(emptyList<Message>(), id) {
+            val messagesState by produceState<List<Message>?>(null, id) {
                 app.db.stories().messages(id).collect { value = it }
             }
             val vm: ThreadVm = viewModel(factory = ThreadVm.factory(id, app.db.stories(), app.keys))
@@ -60,7 +60,8 @@ fun ImprovNav() {
             val title = stories.firstOrNull { it.id == id }?.title.orEmpty()
             ThreadScreen(
                 title = title,
-                messages = messages,
+                messages = messagesState.orEmpty(),
+                messagesLoaded = messagesState != null,
                 onBack = { nav.popBackStack() },
                 onSend = vm::send,
                 waiting = waiting,

@@ -48,6 +48,7 @@ import app.sandy.improv.data.Message
 fun ThreadScreen(
     title: String,
     messages: List<Message>,
+    messagesLoaded: Boolean,
     onBack: () -> Unit,
     onSend: (String) -> Unit,
     waiting: Boolean = false,
@@ -59,8 +60,8 @@ fun ThreadScreen(
         if (tail > 0) listState.scrollToItem(tail - 1)
     }
     val focus = remember { FocusRequester() }
-    LaunchedEffect(Unit) {
-        if (messages.isEmpty()) focus.requestFocus()
+    LaunchedEffect(messagesLoaded) {
+        if (messagesLoaded && messages.isEmpty()) focus.requestFocus()
     }
     var draft by remember { mutableStateOf("") }
     fun submit() {
