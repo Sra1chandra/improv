@@ -1,7 +1,7 @@
 # S.andy — Android improv story partner
 
 Date: 2026-11-12  
-Status: draft, awaiting user review  
+Status: approved 2026-11-12  
 Stack: Kotlin, Jetpack Compose, Room, OpenAI Chat Completions  
 Min SDK: 26  
 Application id: `app.sandy.improv`  
@@ -24,16 +24,16 @@ Not voice in v1.
 ## Who is who
 
 - **You:** no display name.
-  In a thread, your avatar is a **person silhouette** in a circle (head and shoulders).
-  Blue felt outline (Looseleaf "you" pen).
+  In a thread, **no avatar and no "you" label**.
+  Your bubbles sit on the **right**, blue felt outline and blue text.
 - **S.andy:** the scene partner.
-  Avatar is the letter **S** in a circle.
-  Dark felt-tip for their words.
-  Name is hardcoded.
-  Pun: Sandy / yes-and-y.
-- **Chat list avatars:** not you and not S.andy.
-  Each story gets a **letter from the first line** (skip leading "A "/"An "/"The " if present).
+  Name is hardcoded (Sandy / yes-and-y).
+  In a thread, **no avatar and no name label**.
+  Their bubbles sit on the **left**, dark felt.
+  Color + side is enough.
+- **Chat list avatars:** letter from the first line (skip leading "A "/"An "/"The " if present).
   Same story always same letter.
+  Not a person icon. Not S.
 
 Never say "beat" in the UI.
 A turn is just a message.
@@ -49,6 +49,11 @@ A turn is just a message.
 - Gear in the corner → Settings.
 - Stamp-style control: **+ New story**.
 - Empty: "No stories yet." Same stamp.
+- **Many stories:** the list scrolls. Newest at top.
+  Title "Chats" + gear stay put.
+  **+ New story** stays pinned at the bottom of the screen, not after the last row.
+  No pagination. No "load more". No auto-delete.
+  A personal list of hundreds is still a `LazyColumn` over Room.
 
 No search.
 No unread filter.
@@ -60,13 +65,21 @@ No binder clip / printer ornament.
 - Back.
 - Title = same as list title, truncated.
 - Paper sheet.
-- Your messages: person avatar, blue outline on the bubble.
-- S.andy messages: **S** avatar, dark ink.
-- Graphite captions: `you` and `S.andy`.
+- Your bubbles: right, blue.
+  Gutter on the **left** (~22% of the sheet). Never full width.
+- S.andy bubbles: left, dark ink.
+  Gutter on the **right** (~22% of the sheet). Never full width.
+- No chat heads. No `you` / `S.andy` captions on messages.
 - Bottom: empty composer (no placeholder text) + terracotta **Send**.
 - While waiting: a short "…" under the last message.
   Send disabled until the reply lands or errors.
 - New story: blank sheet, composer focused.
+- **Many messages:** only the middle scrolls.
+  Back + title stay at top.
+  Composer stays at bottom.
+  Open a story → jump to the **latest** message.
+  Scroll up for older lines.
+  Same as chats: no paging UI. Trim sent to OpenAI is already specified (keep opening line, drop middle old ones). The full thread still lives on the phone.
 
 ### 3. Settings (calm density)
 
@@ -82,7 +95,7 @@ No binder clip / printer ornament.
 Source: [Looseleaf principles](https://kevintngo.github.io/looseleaf/#/foundations/principles).
 Looseleaf is React.
 We do **not** embed their components.
-We copy the laws in Compose and vendor **Kevin Sans** (MIT) plus a few static SVGs we export (person silhouette, paper tooth tile).
+We copy the laws in Compose and vendor **Kevin Sans** (MIT) plus a paper-tooth tile.
 
 Pens:
 
