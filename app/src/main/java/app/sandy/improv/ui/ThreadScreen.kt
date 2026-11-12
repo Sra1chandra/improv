@@ -64,6 +64,11 @@ fun ThreadScreen(
         if (messages.isEmpty()) focus.requestFocus()
     }
     var draft by remember { mutableStateOf("") }
+    fun submit() {
+        if (waiting) return
+        onSend(draft)
+        draft = ""
+    }
 
     Box(
         Modifier
@@ -135,16 +140,10 @@ fun ThreadScreen(
                                 unfocusedTextColor = Ink.felt,
                             ),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                            keyboardActions = KeyboardActions(onSend = {
-                                onSend(draft)
-                                draft = ""
-                            }),
+                            keyboardActions = KeyboardActions(onSend = { submit() }),
                         )
                         Button(
-                            onClick = {
-                                onSend(draft)
-                                draft = ""
-                            },
+                            onClick = { submit() },
                             enabled = !waiting,
                             colors = stampButtonColors(),
                             border = stampBorder(),

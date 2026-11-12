@@ -1,6 +1,7 @@
 package app.sandy.improv.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -8,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,7 +18,6 @@ import androidx.navigation.navArgument
 import app.sandy.improv.ImprovApp
 import app.sandy.improv.data.Message
 import app.sandy.improv.data.Story
-import app.sandy.improv.domain.letterFromFirstLine
 import java.util.UUID
 import kotlinx.coroutines.launch
 
@@ -53,31 +54,17 @@ fun ImprovNav() {
             val messages by produceState(emptyList<Message>(), id) {
                 app.db.stories().messages(id).collect { value = it }
             }
+            val vm: ThreadVm = viewModel(factory = ThreadVm.factory(id, app.db.stories(), app.keys))
+            val waiting by vm.waiting.collectAsState()
+            val error by vm.error.collectAsState()
             val title = stories.firstOrNull { it.id == id }?.title.orEmpty()
             ThreadScreen(
                 title = title,
                 messages = messages,
                 onBack = { nav.popBackStack() },
-                // ponytail: saves your line only. Reply, waiting, and errors land in Task 10.
-                onSend = { text ->
-                    val line = text.trim()
-                    if (line.isEmpty()) return@ThreadScreen
-                    scope.launch {
-                        val dao = app.db.stories()
-                        val now = System.currentTimeMillis()
-                        dao.insertMessage(Message(UUID.randomUUID().toString(), id, "you", line, now))
-                        val story = dao.story(id) ?: return@launch
-                        val first = story.title.isBlank()
-                        dao.updateStory(
-                            story.copy(
-                                title = if (first) line.lineSequence().first().trim() else story.title,
-                                letter = if (first) letterFromFirstLine(line) else story.letter,
-                                lastLine = line.lineSequence().last().trim(),
-                                updatedAt = now,
-                            ),
-                        )
-                    }
-                },
+                onSend = vm::send,
+                waiting = waiting,
+                error = error,
             )
         }
         composable("settings") {
