@@ -7,6 +7,10 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.io.InterruptedIOException
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
 
 enum class SandyError { NO_KEY, KEY_REFUSED, OFFLINE, STUCK }
@@ -23,6 +27,13 @@ object OpenAi {
         401, 403 -> SandyError.KEY_REFUSED
         in 500..599 -> SandyError.STUCK
         else -> SandyError.STUCK
+    }
+
+    fun mapNetwork(e: Exception): SandyError {
+        if (e is UnknownHostException || e is ConnectException) return SandyError.OFFLINE
+        if (e is InterruptedIOException || e is SocketTimeoutException) return SandyError.STUCK
+        if (e.message?.contains("timeout", ignoreCase = true) == true) return SandyError.STUCK
+        return SandyError.OFFLINE
     }
 
     fun complete(
@@ -57,7 +68,7 @@ object OpenAi {
         } catch (e: SandyException) {
             throw e
         } catch (e: IOException) {
-            throw SandyException(SandyError.OFFLINE)
+            throw SandyException(mapNetwork(e))
         }
     }
 }
