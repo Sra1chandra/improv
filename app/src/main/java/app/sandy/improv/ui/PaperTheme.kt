@@ -1,20 +1,36 @@
 package app.sandy.improv.ui
 
+import android.graphics.BitmapShader
+import android.graphics.Shader
 import android.provider.Settings
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -120,21 +136,73 @@ fun PaperSheet(
     content: @Composable () -> Unit,
 ) {
     val degrees = if (tilt && !reduceMotion()) 1f else 0f
-    Box(
-        modifier
-            .graphicsLayer { rotationZ = degrees }
-            .shadow(2.dp, ambientColor = Ink.umber, spotColor = Ink.umber)
-            .background(Ink.paper),
-    ) {
+    val tooth = rememberTooth()
+    Box(modifier) {
+        // Paper rotates. Children stay in the unrotated box so type stays level.
+        Box(
+            Modifier
+                .matchParentSize()
+                .graphicsLayer { rotationZ = degrees }
+                .shadow(2.dp, ambientColor = Ink.umber, spotColor = Ink.umber)
+                .drawBehind {
+                    drawRect(
+                        brush = Brush.linearGradient(
+                            0f to Color(0xFFFFF8EC),
+                            1f to Ink.paper,
+                            start = Offset.Zero,
+                            end = Offset(size.width, size.height),
+                        ),
+                    )
+                    drawRect(tooth)
+                },
+        )
         content()
     }
 }
 
-/** Terracotta fill, ink outline. Pair with [stampBorder]. */
+/** Terracotta sits 2dp inside the ink outline. Not a Material pill. */
 @Composable
-fun stampButtonColors(): ButtonColors = ButtonDefaults.buttonColors(
-    containerColor = Ink.marker,
-    contentColor = Ink.felt,
-)
+fun Stamp(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    val outline = RoundedCornerShape(4.dp)
+    Box(
+        modifier
+            .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
+            .border(1.dp, Ink.felt, outline)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .padding(2.dp)
+            .background(
+                if (enabled) Ink.marker else Ink.marker.copy(alpha = 0.4f),
+                RoundedCornerShape(2.dp),
+            )
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(label, color = Ink.felt, style = MaterialTheme.typography.labelLarge)
+    }
+}
 
-fun stampBorder(): BorderStroke = BorderStroke(1.dp, Ink.felt)
+// ponytail: 16px procedural tooth, not a scanned sheet. Upgrade = vendor a real tile.
+@Composable
+private fun rememberTooth(): Brush = remember {
+    val tile = ImageBitmap(16, 16)
+    val canvas = Canvas(tile)
+    val paint = Paint()
+    paint.color = Color(0x1A5A371E)
+    canvas.drawCircle(Offset(3f, 5f), 0.7f, paint)
+    canvas.drawCircle(Offset(12f, 11f), 0.6f, paint)
+    paint.color = Color(0x22FFFFFF)
+    canvas.drawCircle(Offset(8f, 2f), 0.5f, paint)
+    canvas.drawCircle(Offset(1f, 14f), 0.45f, paint)
+    ShaderBrush(
+        BitmapShader(
+            tile.asAndroidBitmap(),
+            Shader.TileMode.REPEAT,
+            Shader.TileMode.REPEAT,
+        ),
+    )
+}

@@ -22,7 +22,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -142,14 +141,11 @@ fun ThreadScreen(
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                             keyboardActions = KeyboardActions(onSend = { submit() }),
                         )
-                        Button(
+                        Stamp(
+                            "Send",
                             onClick = { submit() },
                             enabled = !waiting,
-                            colors = stampButtonColors(),
-                            border = stampBorder(),
-                        ) {
-                            Text("Send")
-                        }
+                        )
                     }
                     if (!error.isNullOrBlank()) {
                         Text(

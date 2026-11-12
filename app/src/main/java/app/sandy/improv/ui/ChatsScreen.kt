@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -77,16 +76,13 @@ fun ChatsScreen(
                         }
                     }
                 }
-                Button(
+                Stamp(
+                    "+ New story",
                     onClick = onNew,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp),
-                    colors = stampButtonColors(),
-                    border = stampBorder(),
-                ) {
-                    Text("+ New story")
-                }
+                )
             }
         }
     }
