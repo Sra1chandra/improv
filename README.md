@@ -6,46 +6,87 @@ A small Android story pad. Paper on a desk. No accounts. Your OpenAI key stays o
 
 ## What it looks like
 
-Stories sit in a list, newest first. Title is your opening line. Subtitle is whatever landed last.
+Stories on the left. Open one in the middle. Keep saying yes, and it builds on the right.
 
-![Stories](docs/screenshots/stories.png)
+<p align="center">
+  <img src="docs/screenshots/phones.png" width="780" alt="S.andy on a phone: stories list, a scene, then a few more turns">
+</p>
 
-Open one. You write on the right (blue). S.andy writes on the left (ink). Short lines. Keep going.
-
-![A story](docs/screenshots/story.png)
-
-A few more yes-ands and the scene is a thing. Accept what showed up, then add something new.
-
-![Building a story](docs/screenshots/story-built.png)
+You are blue on the right. S.andy is ink on the left.
 
 ## How to set it up
 
-1. Install the app on your phone.
-2. Open **Settings**.
-3. Paste your OpenAI API key. It is hidden as you type. It never leaves the device except to call OpenAI.
-4. Pick a model. `gpt-4o-mini` is the default and is plenty for this.
-5. Back. Start a story.
+1. Open **Settings**.
+2. Paste your OpenAI API key. Hidden while you type. It stays on this phone except when talking to OpenAI.
+3. Model: leave `gpt-4o-mini` unless you have a reason not to.
+4. Back. Hit **+ New story**. Send one line.
 
-![Settings](docs/screenshots/settings.png)
+<p align="center">
+  <img src="docs/screenshots/phone-settings.png" width="240" alt="Settings: API key and model on the phone">
+</p>
 
-If the key is missing or refused, S.andy tells you in red pencil. Fix it in Settings, then Send again. Your last line is still there.
+If the key is missing or refused, red pencil says so. Fix it, then Send. Your last line is still there.
 
-## Try a first line
+Empty new sheet + Back = nothing saved.
 
-Anything ordinary works. S.andy will treat it as true.
+Try an ordinary first line:
 
 - I ordered a latte, but the barista handed me soup.
 - We're assembling a bookshelf. The instructions are only pictures.
 - This line hasn't moved in twenty minutes.
 
-Back with an empty sheet does not save a story. Send one line, then it lands in the list.
+## Get it on a phone
 
-## Run it
+There is no APK in this repo. You build it onto a device. Need **JDK 17** and [Android platform-tools](https://developer.android.com/tools/releases/platform-tools) (`adb`).
 
-Need JDK 17.
+Clone this repo first.
+
+### Real phone, Wi-Fi debugging
+
+Phone and computer on the same Wi-Fi.
+
+1. On the phone: **Settings → Developer options → Wireless debugging**. Turn it on.
+2. Tap **Pair device with pairing code**. Note the IP, pair port, and 6-digit code.
+3. On the computer:
+
+```bash
+adb pair IP:PAIR_PORT
+```
+
+Type the code when asked. Then connect (the connect port is different from the pair port; the Wireless debugging screen shows it):
+
+```bash
+adb connect IP:CONNECT_PORT
+adb devices
+```
+
+You want `device`, not `offline`.
+
+4. From the repo:
 
 ```bash
 ./gradlew installDebug
+```
+
+5. Open **S.andy** on the phone.
+
+If `adb devices` is empty, toggle Wireless debugging off/on and pair again.
+
+### Android emulator
+
+1. Android Studio → **Device Manager** → a Pixel (API 26+).
+2. Start it.
+3. From the repo:
+
+```bash
+./gradlew installDebug
+```
+
+If both a phone and an emulator show up, pick one:
+
+```bash
+adb devices
+ANDROID_SERIAL=emulator-5554 ./gradlew installDebug
 ```
 
 Then paste a key in Settings.
