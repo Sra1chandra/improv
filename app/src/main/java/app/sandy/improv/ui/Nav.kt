@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -19,13 +18,11 @@ import app.sandy.improv.ImprovApp
 import app.sandy.improv.data.Message
 import app.sandy.improv.data.Story
 import java.util.UUID
-import kotlinx.coroutines.launch
 
 @Composable
 fun ImprovNav() {
     val app = LocalContext.current.applicationContext as ImprovApp
     val nav = rememberNavController()
-    val scope = rememberCoroutineScope()
     val stories by produceState(emptyList<Story>()) {
         app.db.stories().stories().collect { value = it }
     }
@@ -37,12 +34,7 @@ fun ImprovNav() {
                 onOpen = { id -> nav.navigate("thread/$id") },
                 onSettings = { nav.navigate("settings") },
                 onNew = {
-                    scope.launch {
-                        val id = UUID.randomUUID().toString()
-                        val now = System.currentTimeMillis()
-                        app.db.stories().upsertStory(Story(id, "", "?", "", now, now))
-                        nav.navigate("thread/$id")
-                    }
+                    nav.navigate("thread/${UUID.randomUUID()}")
                 },
             )
         }

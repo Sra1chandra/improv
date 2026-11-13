@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StoryDao {
-    @Query("SELECT * FROM Story ORDER BY updatedAt DESC")
+    @Query("SELECT * FROM Story WHERE id IN (SELECT DISTINCT storyId FROM Message) ORDER BY updatedAt DESC")
     fun stories(): Flow<List<Story>>
 
     @Query("SELECT * FROM Story WHERE id = :id")

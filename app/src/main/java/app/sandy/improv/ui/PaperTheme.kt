@@ -2,7 +2,6 @@ package app.sandy.improv.ui
 
 import android.graphics.BitmapShader
 import android.graphics.Shader
-import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -26,10 +26,9 @@ import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -44,12 +43,15 @@ import app.sandy.improv.R
 object Ink {
     val desk = Color(0xFF9DB8AE)
     val paper = Color(0xFFF4EAD4)
+    val paperFace = Color(0xFFFBF6EA)
+    val rule = Color(0xFFD7C4A4)
     val felt = Color(0xFF2A241C)
     val you = Color(0xFF2A5F9E)
     val marker = Color(0xFFC45C3E)
     val pencil = Color(0xFF6B5E4E)
     val danger = Color(0xFFB42318)
     val umber = Color(0x385A371E)
+    val highlight = Color(0x66F0DC6B)
 }
 
 val KevinSans = FontFamily(
@@ -120,42 +122,35 @@ fun PaperTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun reduceMotion(): Boolean {
-    val scale = Settings.Global.getFloat(
-        LocalContext.current.contentResolver,
-        Settings.Global.ANIMATOR_DURATION_SCALE,
-        1f,
-    )
-    return scale == 0f
-}
-
-@Composable
 fun PaperSheet(
     modifier: Modifier = Modifier,
-    tilt: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val degrees = if (tilt && !reduceMotion()) 1f else 0f
+    // ponytail: tilt retired. Crooked sheet made the desk look broken. Square pad.
     val tooth = rememberTooth()
-    Box(modifier) {
-        // Paper rotates. Children stay in the unrotated box so type stays level.
-        Box(
-            Modifier
-                .matchParentSize()
-                .graphicsLayer { rotationZ = degrees }
-                .shadow(2.dp, ambientColor = Ink.umber, spotColor = Ink.umber)
-                .drawBehind {
-                    drawRect(
-                        brush = Brush.linearGradient(
-                            0f to Color(0xFFFFF8EC),
-                            1f to Ink.paper,
-                            start = Offset.Zero,
-                            end = Offset(size.width, size.height),
-                        ),
-                    )
-                    drawRect(tooth)
-                },
-        )
+    Box(
+        modifier
+            .shadow(3.dp, ambientColor = Ink.umber, spotColor = Ink.umber)
+            .clip(RectangleShape)
+            .drawBehind {
+                drawRect(Ink.paper)
+                drawRect(
+                    brush = Brush.linearGradient(
+                        0f to Color(0x66FFF8EC),
+                        1f to Color.Transparent,
+                        start = Offset.Zero,
+                        end = Offset(size.width * 0.35f, size.height * 0.45f),
+                    ),
+                )
+                drawRect(tooth)
+                val step = 28.dp.toPx()
+                var y = 56.dp.toPx()
+                while (y < size.height) {
+                    drawLine(Ink.rule.copy(alpha = 0.45f), Offset(0f, y), Offset(size.width, y), strokeWidth = 1f)
+                    y += step
+                }
+            },
+    ) {
         content()
     }
 }

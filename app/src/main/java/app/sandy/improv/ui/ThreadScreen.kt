@@ -14,10 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -79,7 +80,7 @@ fun ThreadScreen(
     ) {
         PaperSheet(Modifier.fillMaxSize()) {
             BoxWithConstraints(Modifier.fillMaxSize()) {
-                val gutter = maxWidth * 0.22f
+                val bubbleMax = maxWidth * 0.78f
                 Column(Modifier.fillMaxSize()) {
                     Row(
                         Modifier
@@ -104,19 +105,15 @@ fun ThreadScreen(
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.weight(1f).fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(messages, key = { it.id }) { message ->
-                            Bubble(message.text, message.role.equals("you", ignoreCase = true), gutter)
+                            Bubble(message.text, message.role.equals("you", ignoreCase = true), bubbleMax)
                         }
                         if (waiting) {
                             item(key = "waiting") {
-                                Text(
-                                    "…",
-                                    color = Ink.felt,
-                                    modifier = Modifier.padding(end = gutter),
-                                )
+                                Bubble("…", you = false, bubbleMax)
                             }
                         }
                     }
@@ -163,16 +160,25 @@ fun ThreadScreen(
 }
 
 @Composable
-private fun Bubble(text: String, you: Boolean, gutter: Dp) {
+private fun Bubble(text: String, you: Boolean, maxWidth: Dp) {
     val ink = if (you) Ink.you else Ink.felt
-    Text(
-        text = text,
-        color = ink,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = if (you) gutter else 0.dp, end = if (you) 0.dp else gutter)
-            .wrapContentWidth(if (you) Alignment.End else Alignment.Start)
-            .border(1.dp, ink)
-            .padding(horizontal = 10.dp, vertical = 8.dp),
-    )
+    val shape = if (you) {
+        RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomEnd = 4.dp, bottomStart = 18.dp)
+    } else {
+        RoundedCornerShape(topStart = 4.dp, topEnd = 18.dp, bottomEnd = 18.dp, bottomStart = 18.dp)
+    }
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = if (you) Arrangement.End else Arrangement.Start,
+    ) {
+        Text(
+            text = text,
+            color = ink,
+            modifier = Modifier
+                .widthIn(max = maxWidth)
+                .background(Ink.paperFace, shape)
+                .border(1.5.dp, ink, shape)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+        )
+    }
 }

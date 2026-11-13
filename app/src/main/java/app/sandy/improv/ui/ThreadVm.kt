@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.sandy.improv.data.KeyStore
 import app.sandy.improv.data.Message
+import app.sandy.improv.data.Story
 import app.sandy.improv.data.StoryDao
 import app.sandy.improv.domain.Chaos
 import app.sandy.improv.domain.ChatTurn
@@ -53,7 +54,18 @@ internal suspend fun performSend(
         val at = now()
         dao.insertMessage(Message(newId(), storyId, "you", text, at))
         val story = dao.story(storyId)
-        if (story != null) {
+        if (story == null) {
+            dao.upsertStory(
+                Story(
+                    id = storyId,
+                    title = titleLine(text),
+                    letter = letterFromFirstLine(text),
+                    lastLine = previewLine(text),
+                    createdAt = at,
+                    updatedAt = at,
+                ),
+            )
+        } else {
             val first = story.title.isBlank()
             dao.updateStory(
                 story.copy(

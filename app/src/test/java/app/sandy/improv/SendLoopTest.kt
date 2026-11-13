@@ -75,6 +75,24 @@ class SendLoopTest {
     }
 
     @Test
+    fun firstSendCreatesStoryIfMissing() = runBlocking {
+        val dao = MemDao(null)
+        val result = performSend(
+            storyId = "s1",
+            action = SendAction.Send("Bear walks in."),
+            dao = dao,
+            keys = MemKeys("sk-test"),
+            chaos = Chaos { 1.0 },
+            complete = { _, _, _ -> "It sits." },
+        )
+        assertFalse(result.lastFailed)
+        assertEquals("s1", dao.story?.id)
+        assertEquals("Bear walks in.", dao.story?.title)
+        assertEquals("B", dao.story?.letter)
+        assertEquals(listOf("you", "sandy"), dao.messages.map { it.role })
+    }
+
+    @Test
     fun retryDoesNotInsertAnotherYou() = runBlocking {
         val dao = MemDao(story().copy(title = "Bear walks in.", letter = "B", lastLine = "Bear walks in."))
         dao.messages += Message("m1", "s1", "you", "Bear walks in.", 1)

@@ -40,7 +40,7 @@ A turn is just a message.
 
 ## Screens (v1 is only these three)
 
-### 1. Chats (home)
+### 1. Stories (home)
 
 - List of stories, newest updated first.
 - Title = first message you sent, truncated to one line.
@@ -50,7 +50,7 @@ A turn is just a message.
 - Stamp-style control: **+ New story**.
 - Empty: "No stories yet." Same stamp.
 - **Many stories:** the list scrolls. Newest at top.
-  Title "Chats" + gear stay put.
+  Title "Stories" + gear stay put.
   **+ New story** stays pinned at the bottom of the screen, not after the last row.
   No pagination. No "load more". No auto-delete.
   A personal list of hundreds is still a `LazyColumn` over Room.
@@ -74,6 +74,7 @@ No binder clip / printer ornament.
 - While waiting: a short "…" under the last message.
   Send disabled until the reply lands or errors.
 - New story: blank sheet, composer focused.
+  Back with no send → no row in the list.
 - **Many messages:** only the middle scrolls.
   Back + title stay at top.
   Composer stays at bottom.
@@ -107,12 +108,11 @@ Pens:
 
 Laws we will actually implement in v1:
 
-- Cream paper with tooth. Light from upper left.
+- Cream paper with tooth and faint ruled lines. Light from upper left.
 - Short warm umber shadow. No long gray Material blur.
-- Sheet may tilt about 1° on Chats and Thread.
-  Text stays level.
-  Settings has **no** tilt (calm).
-- Reduced motion → no tilt, no jitter anywhere.
+- Sheet sits square on the desk. No tilt.
+- You bubbles hug the right, rounded with a small right tail, blue ink.
+  S.andy bubbles hug the left, rounded with a small left tail, felt ink.
 - Fills sit slightly inside outlines where we draw stamps/buttons.
 - Chat = comfortable.
   Settings = calm.
