@@ -9,7 +9,7 @@ A small Android story pad. Paper on a desk. No accounts. Your OpenAI key stays o
 Stories on the left. Open one in the middle. Keep saying yes, and it builds on the right.
 
 <p align="center">
-  <img src="docs/screenshots/phones.png" width="780" alt="S.andy on a phone: stories list, a scene, then a few more turns">
+  <img src="docs/screenshots/phones.png" width="780" alt="S.andy on a phone: stories, a puppet-show scene, then Bean-Head Espresso">
 </p>
 
 You are blue on the right. S.andy is ink on the left.
@@ -31,9 +31,8 @@ Empty new sheet + Back = nothing saved.
 
 Try an ordinary first line:
 
-- I ordered a latte, but the barista handed me soup.
-- We're assembling a bookshelf. The instructions are only pictures.
-- This line hasn't moved in twenty minutes.
+- Welcome to Bean-Head Espresso, can I get you something unusual today?
+- What if we turn the entire quarterly presentation into a live puppet show?
 
 ## Get it on a phone
 
