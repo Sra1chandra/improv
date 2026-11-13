@@ -9,7 +9,7 @@ A small Android story pad. Paper on a desk. No accounts. Your OpenAI key stays o
 Stories on the left. Open one in the middle. Keep saying yes, and it builds on the right.
 
 <p align="center">
-  <img src="docs/screenshots/phones.png" width="780" alt="S.andy on a phone: stories, a puppet-show scene, then Bean-Head Espresso">
+  <img src="docs/screenshots/stories-phones.png" width="780" alt="S.andy on a phone: stories, a puppet-show scene, then Bean-Head Espresso">
 </p>
 
 You are blue on the right. S.andy is ink on the left.
@@ -22,7 +22,7 @@ You are blue on the right. S.andy is ink on the left.
 4. Back. Hit **+ New story**. Send one line.
 
 <p align="center">
-  <img src="docs/screenshots/phone-settings.png" width="240" alt="Settings: API key and model on the phone">
+  <img src="docs/screenshots/settings-phone.png" width="240" alt="Settings: API key and model on the phone">
 </p>
 
 If the key is missing or refused, red pencil says so. Fix it, then Send. Your last line is still there.
